@@ -1,7 +1,7 @@
 /**
  * Notes:  健康监测实体
  * Ver : CCMiniCloud Framework 2.0.1 ALL RIGHTS RESERVED BY cclinux0730 (wechat)
- * Date: 2022-08-12 19:20:00 
+ * Date: 2022-08-12 19:20:00
  */
 
 
@@ -17,29 +17,31 @@ TaskModel.CL = BaseProjectModel.C('task');
 TaskModel.DB_STRUCTURE = {
 	_pid: 'string|true',
 	TASK_ID: 'string|true',
-
+	
 	TASK_TYPE: 'int|true|default=0|comment=类型 0=用户创建，1=系统创建',
-  
+	
 	TASK_USER_ID: 'string|false|comment=用户ID',
-
-	TASK_STATUS: 'int|true|default=0|comment=状态 0=待处理,1=审批通过,2=审批不通过, 9=已来访', 
-	 
-      
-	TASK_FORMS: 'array|true|default=[]', 
-	TASK_OBJ: 'object|true|default={}',  
- 
-	TASK_SUCC_ADMIN_ID: 'string|false|comment=审批人ID', 
-	TASK_SUCC_ADMIN_NAME: 'string|false', 
-	TASK_SUCC_TIME: 'int|true|default=0', 
-
-	TASK_FAIL_ADMIN_ID: 'string|false|comment=审批人ID', 
-	TASK_FAIL_ADMIN_NAME: 'string|false', 
-	TASK_FAIL_TIME: 'int|true|default=0',  
- 
-	TASK_OVER_ADMIN_ID: 'string|false|comment=审批人ID', 
-	TASK_OVER_ADMIN_NAME: 'string|false', 
-	TASK_OVER_TIME: 'int|true|default=0',  
-
+	
+	TASK_STATUS: 'int|true|default=0|comment=状态 0=待处理,1=审批通过,2=审批不通过, 9=已来访',
+	
+	
+	TASK_FORMS: 'array|true|default=[]',
+	TASK_OBJ: 'object|true|default={}',
+	
+	TASK_DD_INSTANCE_ID: 'string|false|comment=钉钉审批实例ID',
+	
+	TASK_SUCC_ADMIN_ID: 'string|false|comment=审批人ID',
+	TASK_SUCC_ADMIN_NAME: 'string|false',
+	TASK_SUCC_TIME: 'int|true|default=0',
+	
+	TASK_FAIL_ADMIN_ID: 'string|false|comment=审批人ID',
+	TASK_FAIL_ADMIN_NAME: 'string|false',
+	TASK_FAIL_TIME: 'int|true|default=0',
+	
+	TASK_OVER_ADMIN_ID: 'string|false|comment=审批人ID',
+	TASK_OVER_ADMIN_NAME: 'string|false',
+	TASK_OVER_TIME: 'int|true|default=0',
+	
 	TASK_ADD_TIME: 'int|true',
 	TASK_EDIT_TIME: 'int|true',
 	TASK_ADD_IP: 'string|false',
@@ -68,5 +70,5 @@ TaskModel.STATUS_DESC = {
 
 
 
-
 module.exports = TaskModel;
+
