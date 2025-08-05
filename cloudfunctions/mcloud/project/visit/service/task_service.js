@@ -93,12 +93,40 @@ class TaskService extends BaseProjectService {
 
 
 	/**添加 */
-	async insertTask(userId, {
-		forms
-	}) {
+        async insertTask(userId, {
+                forms
+        }) {
 
-		this.AppError('[访客]该功能暂不开放，如有需要请加作者微信：cclinux0730');
-	}
+                let data = {};
+                data.TASK_TYPE = 0;
+                data.TASK_USER_ID = userId;
+                data.TASK_FORMS = forms;
+                data.TASK_OBJ = dataUtil.dbForms2Obj(forms);
+                data.TASK_STATUS = TaskModel.STATUS.WAIT;
+
+                let id = await TaskModel.insert(data);
+
+                try {
+                        const DingTalkService = require('./dingtalk_service.js');
+                        let dtService = new DingTalkService();
+                        let formComponentValues = forms.map(item => {
+                                return {
+                                        name: item.title || item.mark,
+                                        value: '' + (item.val || '')
+                                };
+                        });
+                        let resp = await dtService.createApproval({
+                                originatorUserId: userId,
+                                formComponentValues
+                        });
+                        if (resp.process_instance_id)
+                                await TaskModel.edit(id, { TASK_DD_INSTANCE_ID: resp.process_instance_id });
+                } catch (err) {
+                        console.error('[DingTalk] create approval', err);
+                }
+
+                return { id };
+        }
 
 
 	/**修改 */

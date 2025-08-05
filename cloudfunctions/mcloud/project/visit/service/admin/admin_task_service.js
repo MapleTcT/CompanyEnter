@@ -11,6 +11,8 @@ const exportUtil = require('../../../../framework/utils/export_util.js');
 const timeUtil = require('../../../../framework/utils/time_util.js');
 const dataUtil = require('../../../../framework/utils/data_util.js');
 const TaskModel = require('../../model/task_model.js');
+const MsgService = require('../msg_service.js');
+const DingTalkService = require('../dingtalk_service.js');
 
 // 导出数据KEY
 const EXPORT_TASK_DATA_KEY = 'EXPORT_TASK_DATA';
@@ -122,10 +124,53 @@ class AdminTaskService extends BaseProjectAdminService {
 	}
 
 	/**修改状态 */
-	async statusAdminTask(admin, id, status) {
-		this.AppError('[访客]该功能暂不开放，如有需要请加作者微信：cclinux0730');
+        async statusAdminTask(admin, id, status) {
 
-	}
+                let task = await TaskModel.getOne(id);
+                if (!task) this.AppError('记录不存在');
+
+                let data = { TASK_STATUS: status };
+                let now = timeUtil.time();
+                let resultText = '';
+
+                if (status == TaskModel.STATUS.SUCC) {
+                        data.TASK_SUCC_ADMIN_ID = admin.ADMIN_ID;
+                        data.TASK_SUCC_ADMIN_NAME = admin.ADMIN_NAME;
+                        data.TASK_SUCC_TIME = now;
+                        resultText = '审批通过';
+                }
+                else if (status == TaskModel.STATUS.FAIL) {
+                        data.TASK_FAIL_ADMIN_ID = admin.ADMIN_ID;
+                        data.TASK_FAIL_ADMIN_NAME = admin.ADMIN_NAME;
+                        data.TASK_FAIL_TIME = now;
+                        resultText = '审批不通过';
+                }
+                else if (status == TaskModel.STATUS.OVER) {
+                        data.TASK_OVER_ADMIN_ID = admin.ADMIN_ID;
+                        data.TASK_OVER_ADMIN_NAME = admin.ADMIN_NAME;
+                        data.TASK_OVER_TIME = now;
+                        resultText = '已来访';
+                }
+
+                await TaskModel.edit(id, data);
+
+                try {
+                        let msgService = new MsgService();
+                        await msgService.apptResult(task.TASK_USER_ID, id, task.TASK_OBJ.person, task.TASK_OBJ.desc, task.TASK_OBJ.date, resultText);
+                } catch (err) {
+                        console.error(err);
+                }
+
+                try {
+                        let dtService = new DingTalkService();
+                        await dtService.updateApprovalStatus(task.TASK_DD_INSTANCE_ID, status == TaskModel.STATUS.SUCC);
+                } catch (err) {
+                        console.error(err);
+                }
+
+                return { id };
+
+        }
 
 	// #####################导出数据
 
